@@ -60,6 +60,10 @@ label{font-size:13px;color:var(--mut);display:block;margin-bottom:4px}
 .chip{display:inline-block;background:var(--card2);border:1px solid var(--line);
   border-radius:999px;padding:6px 12px;font-size:13px;margin:0 6px 6px 0;cursor:pointer}
 .chip.on{background:var(--acc);color:#1a1207;border-color:var(--acc);font-weight:700}
+.gymchips{display:inline-flex;gap:4px}
+.gymchips span{font-size:12px;padding:5px 11px;border-radius:999px;background:var(--card2);
+  border:1px solid var(--line);cursor:pointer;font-weight:600}
+.gymchips span.on{background:var(--acc2);color:#0a1a22;border-color:var(--acc2)}
 .divider{height:1px;background:var(--line);margin:12px 0}
 .banner{border-radius:var(--r);padding:12px 14px;margin-bottom:12px;font-size:14px}
 .banner.deload{background:rgba(255,176,58,.12);border:1px solid rgba(255,176,58,.4)}
@@ -81,19 +85,17 @@ svg.chart{width:100%;height:auto;display:block}
 .yt{display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;
   border-radius:50%;background:var(--card2);border:1px solid var(--line);color:var(--acc2);
   font-size:12px;font-weight:700;text-decoration:none;margin-left:6px;vertical-align:middle;flex:none}
-.foodblk{display:flex;align-items:center;gap:10px;padding:12px;border:1px solid var(--line);
-  border-radius:12px;margin-bottom:8px;cursor:pointer}
-.foodblk.on{border-color:var(--acc);background:rgba(255,176,58,.07)}
-.fcheck{width:24px;height:24px;border-radius:8px;border:2px solid var(--mut);flex:none;
-  display:flex;align-items:center;justify-content:center;font-weight:900;color:#1a1207}
-.foodblk.on .fcheck{background:var(--acc);border-color:var(--acc)}
-.sizechips{display:flex;gap:4px}
-.sizechips span{font-size:11px;padding:4px 8px;border-radius:999px;background:var(--card2);
-  border:1px solid var(--line);cursor:pointer}
-.sizechips span.on{background:var(--acc2);color:#0a1a22;border-color:var(--acc2);font-weight:700}
-.bar{height:10px;border-radius:999px;background:var(--card2);overflow:hidden;margin:4px 0 10px}
-.bar i{display:block;height:100%;background:var(--acc);border-radius:999px}
-.bar.p i{background:var(--acc2)}
+.pbtn{display:flex;flex-direction:column;align-items:center;gap:2px;padding:12px 6px;
+  border:1px solid var(--line);border-radius:12px;background:var(--card2);cursor:pointer}
+.pbtn b{font-size:14px}
+.pbtn span{font-size:12px;color:var(--acc2);font-weight:700}
+.pgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.bar{height:12px;border-radius:999px;background:var(--card2);overflow:hidden;margin:6px 0 10px}
+.bar i{display:block;height:100%;background:var(--acc2);border-radius:999px;transition:width .2s}
+.plog{font-size:13px;color:var(--mut);display:flex;justify-content:space-between;
+  padding:6px 0;border-bottom:1px solid var(--line)}
+.plog:last-child{border:none}
+.plog b{color:var(--txt)}
 details{border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin-bottom:8px}
 details summary{cursor:pointer;font-weight:600;font-size:14px}
 details .body{margin-top:8px;font-size:14px;color:var(--txt)}
@@ -120,7 +122,10 @@ details.altbox summary{font-size:13px;color:var(--mut);font-weight:600}
     <div id="deloadBanner"></div>
 
     <div class="card">
-      <h3>Ďalší tréning</h3>
+      <div class="row" style="justify-content:space-between;margin-bottom:4px">
+        <h3 style="margin:0">Ďalší tréning</h3>
+        <span class="gymchips" id="gymChipsToday"></span>
+      </div>
       <div class="row" style="margin-top:6px">
         <div class="grow"><div class="big" id="nextDayName"></div>
           <div class="mut" id="nextDayInfo"></div></div>
@@ -132,21 +137,24 @@ details.altbox summary{font-size:13px;color:var(--mut);font-weight:600}
       <h3>Ranné meranie</h3>
       <div class="row" style="margin-top:8px">
         <input type="number" inputmode="decimal" step="0.1" id="wIn" placeholder="kg">
-        <input type="number" inputmode="decimal" step="0.1" id="bfIn" placeholder="BF %">
+        <input type="number" inputmode="decimal" step="0.5" id="waIn" placeholder="pás cm">
         <input type="number" inputmode="decimal" step="0.5" id="slIn" placeholder="spánok h">
-        <button class="primary" onclick="saveMeasure()">Uložiť</button>
+        <input type="number" inputmode="decimal" step="0.1" id="bfIn" placeholder="BF %">
       </div>
-      <div class="mut" id="wToday" style="margin-top:8px"></div>
+      <div class="row" style="margin-top:8px">
+        <div class="mut grow" id="wToday"></div>
+        <button class="primary small" onclick="saveMeasure()">Uložiť</button>
+      </div>
     </div>
 
     <div class="card">
-      <h3>Dnešné jedlo</h3>
-      <div class="mut" id="foodSummary" style="margin-top:6px"></div>
-      <button class="small" style="margin-top:8px" onclick="go('food')">Otvoriť checklist</button>
+      <h3>Dnešný proteín</h3>
+      <div class="mut" id="protSummary" style="margin-top:6px"></div>
+      <button class="small" style="margin-top:8px" onclick="go('food')">Otvoriť počítač proteínu</button>
     </div>
 
     <div class="card">
-      <h3>Denné ciele</h3>
+      <h3>Ciele</h3>
       <div class="macro" style="margin-top:10px" id="macroBox"></div>
       <div class="divider"></div>
       <div class="mut" id="trendLine"></div>
@@ -163,7 +171,10 @@ details.altbox summary{font-size:13px;color:var(--mut);font-weight:600}
 
   <!-- ===================== TRÉNING ===================== -->
   <div class="screen" id="scr-workout">
-    <h1>Tréning</h1>
+    <div class="row" style="justify-content:space-between">
+      <h1 style="margin:0 0 8px">Tréning</h1>
+      <span class="gymchips" id="gymChipsWo"></span>
+    </div>
     <div id="woBody"></div>
   </div>
 
@@ -171,20 +182,22 @@ details.altbox summary{font-size:13px;color:var(--mut);font-weight:600}
   <div class="screen" id="scr-food">
     <h1>Jedlo</h1>
     <div class="card">
-      <h3>Dnešný súčet</h3>
-      <div id="foodBars" style="margin-top:8px"></div>
-    </div>
-    <div class="card">
-      <h3>Bloky dňa <span class="tag">ťukni = zjedené · veľkosť porcie chipsami</span></h3>
-      <div id="foodBlocks" style="margin-top:8px"></div>
+      <h3>Proteín dnes</h3>
+      <div id="protBar" style="margin-top:8px"></div>
+      <div class="pgrid" id="protBtns"></div>
+      <div class="row" style="margin-top:10px">
+        <input type="number" inputmode="numeric" id="protCustom" placeholder="iné: g proteínu">
+        <button class="small" onclick="addProtCustom()">Pridať</button>
+      </div>
+      <div id="protLog" style="margin-top:10px"></div>
     </div>
     <div class="card">
       <h3>Zásady <span class="tag">pripomienka, nie úloha</span></h3>
       <ul class="zasady" style="margin:8px 0 0;padding-left:20px;font-size:14px">
-        <li>🐟 Tučná ryba 2× do týždňa (losos, pstruh) → smeruj na večere</li>
+        <li>🎯 Rekompozícia: váha stojí (83–85), proteín 160 g — to je celá hra</li>
+        <li>🐟 Tučná ryba 2× do týždňa → smeruj na večere</li>
         <li>🥦 Zelenina/ovocie denne, farebná pestrosť</li>
-        <li>🫘 Strukoviny viackrát do týždňa</li>
-        <li>🥜 Orechy — malá hrsť denne</li>
+        <li>🥜 Orechy — malá hrsť denne · 🫘 strukoviny viackrát do týždňa</li>
         <li>🚫 Minimum ultraspracovaných potravín a cukru večer</li>
       </ul>
     </div>
@@ -193,29 +206,23 @@ details.altbox summary{font-size:13px;color:var(--mut);font-weight:600}
       <details><summary>🥣 Recept: Kaša 2.0</summary><div class="body">
         <b>70 g ovsených vločiek</b> + 250 ml bezlaktózového mlieka → variť 3–4 min (mikrovlnka: 2+1 min).<br>
         <b>Nechaj 2–3 min vychladnúť</b>, až potom zamiešaj <b>30 g whey izolátu</b> (inak hrudky!).<br>
-        Navrch: 1 PL arašidového/mandľového masla alebo hrsť orechov, ovocie, škorica, prípadne ČL chia.<br>
-        <span class="mut">Lenivá verzia: overnight oats — večer zmiešať, ráno jesť studené.</span><br>
-        <span class="mut">≈ 700 kcal · 42 g proteínu</span>
+        Navrch: orechové maslo/orechy, ovocie, škorica.<br>
+        <span class="mut">≈ 700 kcal · 42 g proteínu · lenivá verzia: overnight oats</span>
       </div></details>
-      <details><summary>🍽️ Pravidlá obeda/večere v reštaurácii</summary><div class="body">
+      <details><summary>🍽️ Pravidlá reštaurácie</summary><div class="body">
         <ol style="margin:0;padding-left:18px">
-        <li>Mäso/ryba hlavná zložka — väčšia porcia mäsa aj za doplatok</li>
-        <li>Príloha ryža/zemiaky — nešetriť, sacharidy treba</li>
+        <li>Mäso/ryba hlavná zložka — väčšia porcia aj za doplatok</li>
+        <li>Príloha ryža/zemiaky — pri rekompozícii striedmo večer</li>
         <li>Zelenina/šalát vždy, keď je na lístku</li>
         </ol>
       </div></details>
-      <details><summary>🌙 Večerný proteín — 10 možností</summary><div class="body">
+      <details><summary>🌙 Večerný proteín — možnosti</summary><div class="body">
         <ol style="margin:0;padding-left:18px">
-        <li>Bezlaktózový skyr 150–200 g</li>
-        <li>Bezlaktózový tvaroh / cottage cheese 150–200 g</li>
+        <li>Bezlaktózový skyr / tvaroh / cottage 150–200 g</li>
         <li>Proteínový puding (20 g P / do 250 kcal)</li>
         <li>Kazeínový shake 30 g</li>
-        <li>Bezlaktózový jogurt + čučoriedky/maliny</li>
-        <li>2 vajcia natvrdo</li>
-        <li>Orechy 20–25 g + tvrdý syr (parmezán/čedar)</li>
-        <li>Morčacia šunka 90 %+ (občasne)</li>
-        <li>Kiwi/višne + skyr</li>
-        <li>Proteínová tyčinka (núdzovka)</li>
+        <li>2 vajcia natvrdo · morčacia šunka 90 %+</li>
+        <li>Orechy + tvrdý syr · proteínová tyčinka (núdzovka)</li>
         </ol>
       </div></details>
     </div>
@@ -227,6 +234,10 @@ details.altbox summary{font-size:13px;color:var(--mut);font-weight:600}
     <div class="card">
       <h3>Váha <span class="tag">bodky = denné · čiara = 7-dňový priemer</span></h3>
       <div id="chartW"></div>
+    </div>
+    <div class="card">
+      <h3>Obvod pása <span class="tag">cm · hlavná rekomp metrika</span></h3>
+      <div id="chartWA"></div>
     </div>
     <div class="card">
       <h3>Body fat %</h3>
@@ -257,9 +268,15 @@ details.altbox summary{font-size:13px;color:var(--mut);font-weight:600}
   <div class="screen" id="scr-settings">
     <h1>Nastavenia</h1>
     <div class="card">
-      <h3>Ciele</h3>
-      <div class="row" style="margin-top:8px">
-        <div class="grow"><label>Kalórie</label><input type="number" id="sKcal"></div>
+      <h3>Cieľ</h3>
+      <label style="margin-top:8px">Fáza</label>
+      <select id="sGoal">
+        <option value="bulk">Bulk — naberanie (+125 g/týž.)</option>
+        <option value="recomp">Rekompozícia — držať váhu, chudnúť tuk</option>
+        <option value="cut">Cut — chudnutie (−300 g/týž.)</option>
+      </select>
+      <div class="row" style="margin-top:10px">
+        <div class="grow"><label>Kalórie (referencia)</label><input type="number" id="sKcal"></div>
         <div class="grow"><label>Bielkoviny g</label><input type="number" id="sP"></div>
       </div>
       <div class="row" style="margin-top:8px">
@@ -295,7 +312,7 @@ details.altbox summary{font-size:13px;color:var(--mut);font-weight:600}
     <div class="card">
       <button class="primary" style="width:100%" onclick="saveSettings()">Uložiť nastavenia</button>
     </div>
-    <p class="mut" style="font-size:12px">Progres v3 · dáta ostávajú len v tomto zariadení ·
+    <p class="mut" style="font-size:12px">Progres v4 · dáta ostávajú len v tomto zariadení ·
     rob si export zálohy aspoň raz týždenne</p>
   </div>
 </div>
@@ -316,12 +333,12 @@ details.altbox summary{font-size:13px;color:var(--mut);font-weight:600}
 
 <script>
 /* ============================================================
-   PROGRES v3
-   · nový plán (belt squat, rope pushdown, incline DB curl,
-     woodchop, core rozšírenie, návrat širokého pulldownu)
-   · obojsmerné swapy s návratom
-   · poznámka k tréningu · reset deload počítadla
-   · back-off strážca · zjednodušené Jedlo (zásady bez odškrtávania)
+   PROGRES v4
+   · profily fitiek (Bratislava / Praha) — swapy per fitko
+   · voľný výber náhrady z celej databázy
+   · nové brucho: Pallof⇄Torso Rotation, Machine⇄Floor Crunch
+   · cieľ Bulk / Rekomp / Cut — trend aj adaptívna korekcia
+   · obvod pása + graf · proteínový počítač namiesto blokov
    ============================================================ */
 
 const MUSCLES = ["Quads","Hams","Glutes","Chest","Back","Shoulders","Arms","Calves","Core"];
@@ -332,48 +349,64 @@ const EXDB = {
  "Lying Leg Curl":        {m:"Hams",    r:[8,15],  inc:2.5},
  "Bulgarian Split Squat": {m:"Quads",   r:[8,15],  inc:2,   fail:false, note:"Nechaj 1 v zásobe — balans"},
  "Hip Thrust":            {m:"Glutes",  r:[8,15],  inc:5,   note:"Na vrchu podsadená panva, rebrá dole"},
- "Leg Extension":         {m:"Quads",   r:[10,18], inc:2.5, note:"Odľahčene (~50–55 kg), pomaly, bez zlyhania — kým úpony"},
+ "Leg Extension":         {m:"Quads",   r:[10,18], inc:2.5, note:"Odľahčene, pomaly, bez zlyhania — kým úpony"},
  "Standing Calf Raise":   {m:"Calves",  r:[10,18], inc:2.5, note:"Z podlahy (bez hlbokého náťahu), RIR 1–2 — kým päty"},
- "Captain's Chair Knee Raise":{m:"Core",r:[10,15], inc:1,   note:"Panvu na vrchu podtoč"},
+ "Captain's Chair Knee Raise":{m:"Core",r:[10,15], inc:1,   note:"Panvu na vrchu podtoč · progresia: vystreté nohy → DB medzi členky"},
  "Machine Chest Press":   {m:"Chest",   r:[6,12],  inc:2.5},
  "Chest-Supported Row":   {m:"Back",    r:[8,15],  inc:2.5, note:"Úzky/neutrálny úchop — laty"},
- "Incline Smith Press":   {m:"Chest",   r:[8,12],  inc:2.5, note:"Lavica 30° · záchrana: otoč zápästia"},
+ "Incline Smith Press":   {m:"Chest",   r:[8,12],  inc:2.5, note:"Lavica 30° · Smith: záchrana otočením zápästí · voľná činka bez Smitha: zarážky stojana alebo RIR 1–2, NIE zlyhanie"},
  "Lat Pulldown":          {m:"Back",    r:[8,15],  inc:2.5, note:"Široký úchop — horné laty"},
  "Lateral Raise":         {m:"Shoulders",r:[12,20],inc:1,   note:"Unilaterálne s oporou"},
  "Rope Pushdown":         {m:"Arms",    r:[10,18], inc:2.5, note:"Na konci pohybu roztiahni konce lanka od seba"},
  "Preacher Curl":         {m:"Arms",    r:[8,15],  inc:2.5},
- "Cable Woodchop":        {m:"Core",    r:[10,15], inc:2.5, note:"Na stranu · pri časovej tiesni škrtnuteľný"},
+ "Pallof Press":          {m:"Core",    r:[10,16], inc:2.5, note:"Anti-rotácia: trup drží, ruky tlačia · na stranu"},
  "Leg Press (chodidlá vysoko)":{m:"Hams",r:[8,15], inc:5,   note:"Plný ROM, 3 s dole · RIR 1 kým úpony"},
  "Seated Leg Curl":       {m:"Hams",    r:[8,15],  inc:2.5},
  "Glute Kickback (machine)":{m:"Glutes",r:[10,15], inc:2.5, note:"Unilaterálne, tlač pätou"},
- "Back Extension":        {m:"Core",    r:[8,20],  inc:2.5, fail:false, note:"Kontrolovane, RIR 2–3, NIE do zlyhania · po 2× 15–20 pridaj 5 kg kotúč na hruď"},
+ "Back Extension":        {m:"Core",    r:[8,20],  inc:2.5, fail:false, note:"Kontrolovane, RIR 2–3, NIE do zlyhania · po 2× 15–20 pridaj 5 kg kotúč"},
  "Hip Abduction":         {m:"Glutes",  r:[12,20], inc:2.5},
  "Seated Calf Raise":     {m:"Calves",  r:[12,20], inc:2.5, note:"Obmedzený náťah dole — kým päty"},
- "Kneeling Cable Crunch": {m:"Core",    r:[10,15], inc:2.5, note:"Ohyb hrudníka, nie predklon"},
+ "Machine Crunch":        {m:"Core",    r:[10,15], inc:2.5, note:"V sede s operadlom · prvý tréning ľahko — kríže čokoľvek povedia → cvik von"},
+ "Weighted Floor Crunch": {m:"Core",    r:[10,15], inc:2.5, note:"Crunch, NIE sit-up: len lopatky hore, driek na podložke · kotúč na hrudi, nie za hlavou"},
  "Seated OHP (s oporou)": {m:"Shoulders",r:[6,12], inc:2,   note:"Lavica 80–85°, DB vykopnúť kolenami"},
  "Lat Pulldown (close-grip)":{m:"Back", r:[8,15],  inc:2.5, note:"Úzky/neutrálny úchop — spodné laty"},
  "T-Bar Row (opora hrudníka)":{m:"Back",r:[8,15],  inc:2.5, note:"Široký nadhmat — horný chrbát"},
- "Machine Chest Press (plate-loaded, úzky)":{m:"Chest",r:[8,15],inc:5,note:"Zápis = súčet strán · back-off disciplinovane podľa návrhu"},
+ "Machine Chest Press (plate-loaded, úzky)":{m:"Chest",r:[8,15],inc:5,note:"Zápis = súčet oboch strán · back-off podľa návrhu"},
  "Rear Delt Fly":         {m:"Shoulders",r:[12,20],inc:1},
- "Incline DB Curl":       {m:"Arms",    r:[10,18], inc:1,   note:"Lavica 45–55°, ramená visia kolmo a nehýbu sa, plný náťah"},
- "DB Skull Crushers":     {m:"Arms",    r:[8,15],  inc:1,   note:"Ramená mierne za hlavou a FIXOVANÉ · spúšťaj za hlavu · pri zlyhaní polož DB na zem"},
+ "Incline DB Curl":       {m:"Arms",    r:[10,18], inc:2,   note:"Lavica 45–55°, ramená visia kolmo a nehýbu sa, plný náťah"},
+ "DB Skull Crushers":     {m:"Arms",    r:[8,15],  inc:1,   note:"Ramená mierne za hlavou a FIXOVANÉ · spúšťaj za hlavu"},
  /* --- alternatívy --- */
+ "Torso Rotation Machine":{m:"Core",    r:[10,15], inc:2.5, note:"ĽAHKO, kontrolovaný rozsah, nie krajné polohy · kríže čokoľvek povedia → späť na Pallof"},
  "Hack Squat":            {m:"Quads",   r:[6,12],  inc:5,   note:"Plný ROM, 3 s dole"},
  "Pendulum Squat":        {m:"Quads",   r:[6,12],  inc:5},
  "Leg Press":             {m:"Quads",   r:[8,15],  inc:5},
  "Cable Kickback":        {m:"Glutes",  r:[10,15], inc:2.5},
- "Hammer Curl":           {m:"Arms",    r:[10,18], inc:1,   note:"Neutrálny úchop — brachialis"},
+ "Hammer Curl":           {m:"Arms",    r:[10,18], inc:2,   note:"Neutrálny úchop — brachialis"},
  "Machine Shoulder Press":{m:"Shoulders",r:[8,15], inc:2.5},
  "Seated Cable Row":      {m:"Back",    r:[8,15],  inc:2.5},
  "Pull-ups":              {m:"Back",    r:[5,12],  inc:2.5, note:"Váha = prídavná záťaž"},
  "Cable Fly":             {m:"Chest",   r:[10,18], inc:2.5},
+ "Pec Deck":              {m:"Chest",   r:[10,18], inc:2.5},
  "Flat DB Press":         {m:"Chest",   r:[8,15],  inc:2},
  "Incline DB Press":      {m:"Chest",   r:[8,15],  inc:2},
  "Triceps Dip Machine":   {m:"Arms",    r:[8,15],  inc:2.5},
  "Triceps Pushdown":      {m:"Arms",    r:[10,18], inc:2.5},
- "Pallof Press":          {m:"Core",    r:[10,16], inc:2.5},
  "Rope Overhead Extension":{m:"Arms",   r:[10,18], inc:2.5, note:"V sede s opretým chrbtom"},
+ "Romanian Deadlift (DB)":{m:"Hams",    r:[10,15], inc:2,   note:"Len po dohode — axiálna záťaž; neutrálny chrbát"},
+ "Nordic Curl (asistovaný)":{m:"Hams",  r:[5,10],  inc:0},
+ "Leg Extension (unilat.)":{m:"Quads",  r:[10,18], inc:2.5},
+ "Smith Squat":           {m:"Quads",   r:[8,12],  inc:5,   note:"Chodidlá mierne vpred, kontrolovane"},
+ "Goblet Squat":          {m:"Quads",   r:[10,15], inc:2},
+ "DB Shoulder Press (v sede)":{m:"Shoulders",r:[8,15],inc:2},
+ "Cable Lateral Raise":   {m:"Shoulders",r:[12,20],inc:1},
+ "Face Pull":             {m:"Shoulders",r:[12,20],inc:2.5},
+ "Hip Thrust Machine":    {m:"Glutes",  r:[8,15],  inc:5},
+ "Donkey Calf Raise":     {m:"Calves",  r:[10,18], inc:5},
+ "Calf Press (na leg presse)":{m:"Calves",r:[10,18],inc:5},
+ "Hanging Leg Raise":     {m:"Core",    r:[8,15],  inc:1,   note:"Vis na hrazde, podtáčaj panvu"},
  /* --- legacy (história, tonáž) --- */
+ "Kneeling Cable Crunch": {m:"Core",    r:[10,15], inc:2.5},
+ "Cable Woodchop":        {m:"Core",    r:[10,15], inc:2.5},
  "Cable Curl":            {m:"Arms",    r:[10,18], inc:2.5},
  "EZ Bar Curl":           {m:"Arms",    r:[8,15],  inc:2},
  "Overhead Cable Triceps":{m:"Arms",    r:[10,18], inc:2.5},
@@ -384,26 +417,33 @@ const EXDB = {
 };
 
 const ALTS = {
- "Belt Squat":["Hack Squat","Pendulum Squat","Leg Press"],
- "Machine Chest Press":["Flat DB Press","Cable Fly"],
+ "Belt Squat":["Hack Squat","Pendulum Squat","Smith Squat","Leg Press"],
+ "Machine Chest Press":["Flat DB Press","Pec Deck","Cable Fly"],
  "Incline Smith Press":["Incline DB Press","Machine Chest Press"],
  "Chest-Supported Row":["T-Bar Row (opora hrudníka)","Seated Cable Row"],
  "T-Bar Row (opora hrudníka)":["Chest-Supported Row","Seated Cable Row"],
  "Lat Pulldown":["Pull-ups"],
  "Lat Pulldown (close-grip)":["Pull-ups","Seated Cable Row"],
- "Lying Leg Curl":["Seated Leg Curl"],
- "Seated Leg Curl":["Lying Leg Curl"],
- "Glute Kickback (machine)":["Cable Kickback","Hip Thrust"],
- "Seated OHP (s oporou)":["Machine Shoulder Press"],
+ "Lying Leg Curl":["Seated Leg Curl","Nordic Curl (asistovaný)"],
+ "Seated Leg Curl":["Lying Leg Curl","Nordic Curl (asistovaný)"],
+ "Glute Kickback (machine)":["Cable Kickback","Hip Thrust","Hip Thrust Machine"],
+ "Seated OHP (s oporou)":["Machine Shoulder Press","DB Shoulder Press (v sede)"],
  "Preacher Curl":["Hammer Curl","Incline DB Curl"],
  "Incline DB Curl":["Hammer Curl","Preacher Curl"],
  "Rope Pushdown":["Triceps Pushdown","Triceps Dip Machine"],
- "DB Skull Crushers":["Rope Overhead Extension","Triceps Dip Machine"],
- "Kneeling Cable Crunch":["Captain's Chair Knee Raise"],
- "Captain's Chair Knee Raise":["Kneeling Cable Crunch"],
- "Cable Woodchop":["Pallof Press"],
- "Lateral Raise":["Machine Shoulder Press"],
- "Bulgarian Split Squat":["Leg Press","Leg Extension"]
+ "DB Skull Crushers":["Triceps Dip Machine","Rope Overhead Extension"],
+ "Lateral Raise":["Cable Lateral Raise","Machine Shoulder Press"],
+ "Rear Delt Fly":["Face Pull"],
+ "Bulgarian Split Squat":["Goblet Squat","Leg Press","Leg Extension (unilat.)"],
+ "Hip Thrust":["Hip Thrust Machine","Glute Kickback (machine)"],
+ "Standing Calf Raise":["Calf Press (na leg presse)","Donkey Calf Raise"],
+ "Seated Calf Raise":["Calf Press (na leg presse)"],
+ "Leg Press (chodidlá vysoko)":["Leg Press","Romanian Deadlift (DB)"],
+ "Pallof Press":["Torso Rotation Machine"],
+ "Torso Rotation Machine":["Pallof Press"],
+ "Machine Crunch":["Weighted Floor Crunch","Captain's Chair Knee Raise"],
+ "Weighted Floor Crunch":["Machine Crunch","Captain's Chair Knee Raise"],
+ "Captain's Chair Knee Raise":["Hanging Leg Raise","Machine Crunch","Weighted Floor Crunch"]
 };
 
 const PLAN = [
@@ -412,26 +452,34 @@ const PLAN = [
   ex:["Belt Squat","Lying Leg Curl","Bulgarian Split Squat","Hip Thrust","Leg Extension","Standing Calf Raise","Captain's Chair Knee Raise"]},
  {id:"UA", name:"Upper A", sub:"tlaky",
   warm:["Veslo 5 min","Rotátory s gumou","Scap Push-ups"],
-  ex:["Machine Chest Press","Chest-Supported Row","Incline Smith Press","Lat Pulldown","Lateral Raise","Rope Pushdown","Preacher Curl","Cable Woodchop"]},
+  ex:["Machine Chest Press","Chest-Supported Row","Incline Smith Press","Lat Pulldown","Lateral Raise","Rope Pushdown","Preacher Curl","Pallof Press"]},
  {id:"LB", name:"Lower B", sub:"zadný reťazec + chrbát",
   warm:["Bicykel 5 min","Cat-Cow","Glute Bridge 2×12","Bird Dog 1×8"],
-  ex:["Leg Press (chodidlá vysoko)","Seated Leg Curl","Glute Kickback (machine)","Back Extension","Hip Abduction","Seated Calf Raise","Kneeling Cable Crunch"]},
+  ex:["Leg Press (chodidlá vysoko)","Seated Leg Curl","Glute Kickback (machine)","Back Extension","Hip Abduction","Seated Calf Raise","Machine Crunch"]},
  {id:"UB", name:"Upper B", sub:"ťahy + vertikál",
   warm:["Veslo 5 min","Rotátory s gumou","Band Pull-aparts"],
-  ex:["Seated OHP (s oporou)","Lat Pulldown (close-grip)","Machine Chest Press (plate-loaded, úzky)","T-Bar Row (opora hrudníka)","Rear Delt Fly","Incline DB Curl","DB Skull Crushers","Kneeling Cable Crunch"]}
+  ex:["Seated OHP (s oporou)","Lat Pulldown (close-grip)","Machine Chest Press (plate-loaded, úzky)","T-Bar Row (opora hrudníka)","Rear Delt Fly","Incline DB Curl","DB Skull Crushers","Weighted Floor Crunch"]}
 ];
 const SETS = 2;
 const BACKOFF = 0.875;
-const GOAL_RATE = 0.125;
 
-const FOOD_BLOCKS = [
- {id:"kasa",  name:"Kaša 2.0",               kcal:700, p:42},
- {id:"obed",  name:"Obed (reštaurácia)",     kcal:800, p:45},
- {id:"shake", name:"Shake + banán",          kcal:300, p:32},
- {id:"vecera",name:"Večera (reštaurácia)",   kcal:800, p:40},
- {id:"vecer", name:"Večerný proteín (flex)", kcal:200, p:20}
+const GOALS = {
+ bulk:  {label:"Bulk",   rate:0.125, low:0.02,  high:0.30,
+         txtLow:"Pomalšie než cieľ (+0,125 kg/týž.).", txtHigh:"Rýchlejšie než cieľ.", txtOk:"V cieľovom tempe. 👍"},
+ recomp:{label:"Rekomp", rate:0,     low:-0.15, high:0.15,
+         txtLow:"Váha klesá — pri rekompe má stáť.", txtHigh:"Váha rastie — pri rekompe má stáť.", txtOk:"Váha drží — rekomp beží. 👍"},
+ cut:   {label:"Cut",    rate:-0.30, low:-0.60, high:-0.10,
+         txtLow:"Chudneš prirýchlo — riskuješ sval.", txtHigh:"Chudneš pomalšie než cieľ (−0,3 kg/týž.).", txtOk:"V cieľovom tempe. 👍"}
+};
+
+const PROT_BTNS = [
+ {t:"Shake",            p:32},
+ {t:"Jedlo (mäso/ryba)",p:40},
+ {t:"Skyr / puding",    p:20},
+ {t:"Tyčinka",          p:20},
+ {t:"2 vajcia",         p:13},
+ {t:"Tvrdý syr 50 g",   p:13}
 ];
-const SIZES = [{v:0.75,l:"menej"},{v:1,l:"norm"},{v:1.25,l:"viac"}];
 
 /* ==================== ÚLOŽISKO ==================== */
 const KEY = "progres_v1";
@@ -439,12 +487,14 @@ let S = null;
 
 function defaultStore(){
   return {
-    v:3,
-    profile:{kcal:2850,p:160,f:75,c:385,mode:"auto",deloadWeeks:7},
+    v:4,
+    profile:{kcal:2850,p:160,f:75,c:385,mode:"auto",deloadWeeks:7,goal:"recomp"},
     meas:[], workouts:[], activities:[],
-    dayIdx:0, hints:{}, lastInc:{}, swaps:{},
+    dayIdx:0, hints:{}, lastInc:{},
+    gym:"ba",
+    gyms:{ba:{name:"Bratislava",swaps:{}}, pr:{name:"Praha",swaps:{}}},
     deload:{active:false,start:todayISO()},
-    food:{},
+    food:{}, prot:{},
     adapt:{base:2850,applied:0,lastCheck:null,streak:{dir:null,n:0},pending:null},
     draft:null
   };
@@ -464,13 +514,27 @@ function migrate(){
     S.draft=null; S.v=2;
   }
   if(S.v===2){ /* V2 → V3 */
-    delete S.swaps["Lat Pulldown"];      // pulldown sa vracia do plánu, zhyby = alternatíva
-    const inPlan=new Set(PLAN.flatMap(d=>d.ex));
-    Object.keys(S.swaps).forEach(k=>{ if(!inPlan.has(k)) delete S.swaps[k]; });
-    S.draft=null;                        // draft z V2 má iné indexy plánu
-    S.dayIdx=(S.dayIdx||0)%PLAN.length;
-    S.v=3;
+    delete (S.swaps||{})["Lat Pulldown"];
+    S.draft=null; S.v=3;
   }
+  if(S.v===3){ /* V3 → V4 */
+    S.gym="ba";
+    S.gyms={ba:{name:"Bratislava",swaps:Object.assign({},S.swaps||{})},
+            pr:{name:"Praha",swaps:{}}};
+    delete S.swaps;
+    S.profile.goal="recomp";          // dohodnuté: ideme na rekompozíciu
+    S.prot=S.prot||{};
+    const inPlan=new Set(PLAN.flatMap(d=>d.ex));
+    Object.values(S.gyms).forEach(g=>{
+      Object.keys(g.swaps).forEach(k=>{ if(!inPlan.has(k)) delete g.swaps[k]; });
+    });
+    S.draft=null;
+    S.dayIdx=(S.dayIdx||0)%PLAN.length;
+    S.v=4;
+  }
+  if(!S.profile.goal) S.profile.goal="recomp";
+  if(!S.gyms) { S.gyms={ba:{name:"Bratislava",swaps:{}},pr:{name:"Praha",swaps:{}}}; S.gym="ba"; }
+  if(!S.prot) S.prot={};
 }
 
 function load(){
@@ -503,13 +567,31 @@ function toast(msg){
   setTimeout(()=>t.classList.remove("show"),1800);
 }
 function esc(s){ return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/'/g,"&#39;"); }
-function exOf(day){ return day.ex.map(n=>S.swaps[n]||n); }
+function gymSwaps(g){ return S.gyms[g||S.gym].swaps; }
+function resolveEx(orig,g){ return gymSwaps(g)[orig]||orig; }
+function exOf(day,g){ return day.ex.map(n=>resolveEx(n,g)); }
 function yt(name){
   return `<a class="yt" target="_blank" rel="noopener"
     href="https://www.youtube.com/results?search_query=${encodeURIComponent(name+" exercise form")}"
     onclick="event.stopPropagation()">?</a>`;
 }
 function roundInc(x,step){ return Math.round(x/step)*step; }
+function gymChipsHTML(ctxId){
+  return Object.keys(S.gyms).map(g=>
+    `<span class="${S.gym===g?"on":""}" onclick="setGym('${g}','${ctxId}')">${S.gyms[g].name}</span>`).join("");
+}
+function setGym(g,ctx){
+  if(S.draft){ toast("Najprv dokonči alebo zruš rozpracovaný tréning"); return; }
+  S.gym=g; save();
+  if(ctx==="today") renderToday(); else renderWorkout(), renderGymChips();
+  renderGymChips();
+}
+function renderGymChips(){
+  const a=document.getElementById("gymChipsToday");
+  const b=document.getElementById("gymChipsWo");
+  if(a) a.innerHTML=gymChipsHTML("today");
+  if(b) b.innerHTML=gymChipsHTML("wo");
+}
 
 /* ==================== NAVIGÁCIA ==================== */
 function go(id){
@@ -522,6 +604,7 @@ function go(id){
   if(id==="food") renderFood();
   if(id==="progress") renderProgress();
   if(id==="settings") renderSettings();
+  renderGymChips();
   window.scrollTo(0,0);
 }
 
@@ -534,23 +617,23 @@ function renderToday(){
 
   const day=PLAN[S.dayIdx];
   document.getElementById("nextDayName").textContent=day.name;
-  document.getElementById("nextDayInfo").textContent=day.sub+" · "+day.ex.length+" cvikov";
+  document.getElementById("nextDayInfo").textContent=day.sub+" · "+day.ex.length+" cvikov · "+S.gyms[S.gym].name;
 
   const p=S.profile;
+  const g=GOALS[p.goal]||GOALS.recomp;
   document.getElementById("macroBox").innerHTML =
-    `<div><div class="v accent">${p.kcal}</div><div class="l">kcal</div></div>
-     <div><div class="v">${p.p} g</div><div class="l">bielkoviny</div></div>
-     <div><div class="v">${p.f} g</div><div class="l">tuky</div></div>
-     <div><div class="v">${p.c} g</div><div class="l">sacharidy</div></div>`;
+    `<div><div class="v accent">${g.label}</div><div class="l">fáza</div></div>
+     <div><div class="v">${p.p} g</div><div class="l">proteín</div></div>
+     <div><div class="v">${p.kcal}</div><div class="l">kcal ref.</div></div>
+     <div><div class="v">${g.rate>0?"+":""}${g.rate} </div><div class="l">kg/týž. cieľ</div></div>`;
 
   const t=S.meas.find(m=>m.d===todayISO());
   document.getElementById("wToday").textContent =
-    t ? `Dnes: ${t.w!=null?t.w+" kg":""}${t.bf?" · "+t.bf+" % BF":""}${t.sl?" · "+t.sl+" h spánok":""}`
+    t ? `Dnes: ${t.w!=null?t.w+" kg":""}${t.wa?" · pás "+t.wa+" cm":""}${t.sl?" · "+t.sl+" h":""}${t.bf?" · "+t.bf+" %":""}`
       : "Dnes ešte nezapísané";
 
-  const f=foodSum(todayISO());
-  document.getElementById("foodSummary").textContent =
-    `${f.kcal} / ${p.kcal} kcal · ${f.p} / ${p.p} g proteínu`;
+  document.getElementById("protSummary").textContent =
+    `${protSum(todayISO())} / ${p.p} g`;
 
   const ten=S.activities.filter(a=>a.d===todayISO()).length;
   document.getElementById("tennisToday").textContent = ten? "Dnes: 🎾 zapísané" : "";
@@ -559,33 +642,39 @@ function renderToday(){
   document.getElementById("deloadBanner").innerHTML = deloadBanner();
   runAdapt();
   document.getElementById("adaptBanner").innerHTML = adaptBanner();
+  renderGymChips();
 }
 
-function trendText(){
+function weekRate(){
   const sorted=[...S.meas].filter(m=>m.w!=null).sort((a,b)=>a.d<b.d?-1:1);
-  if(sorted.length<8) return "Trend sa ukáže po ~2 týždňoch meraní.";
+  if(sorted.length<8) return null;
   const avgEnd=(endD)=>{
     const win=sorted.filter(m=>daysBetween(m.d,endD)>=0 && daysBetween(m.d,endD)<7);
     return win.length? win.reduce((s,m)=>s+m.w,0)/win.length : null;
   };
   const last=sorted[sorted.length-1].d;
   const now=avgEnd(last);
-  const prevD=new Date(last); prevD.setDate(prevD.getDate()-7);
-  const prev=avgEnd(prevD.toISOString().slice(0,10));
-  if(now==null||prev==null) return `7-dňový priemer: <b>${now?now.toFixed(1):"–"} kg</b>`;
-  const diff=now-prev;
-  let verdict;
-  if(diff<GOAL_RATE-0.1) verdict=`Pomalšie než cieľ (+${GOAL_RATE} kg/týž.).`;
-  else if(diff>GOAL_RATE+0.2) verdict=`Rýchlejšie než cieľ.`;
-  else verdict=`V cieľovom tempe. 👍`;
-  return `7-dňový priemer: <b>${now.toFixed(1)} kg</b> (${diff>=0?"+":""}${diff.toFixed(2)} kg/týž.)<br>${verdict}`;
+  const pD=new Date(last); pD.setDate(pD.getDate()-7);
+  const prev=avgEnd(pD.toISOString().slice(0,10));
+  if(now==null||prev==null) return {now,rate:null};
+  return {now, rate:now-prev};
+}
+
+function trendText(){
+  const r=weekRate();
+  if(!r) return "Trend sa ukáže po ~2 týždňoch meraní.";
+  const g=GOALS[S.profile.goal]||GOALS.recomp;
+  if(r.rate==null) return `7-dňový priemer: <b>${r.now.toFixed(1)} kg</b>`;
+  let verdict = g.txtOk;
+  if(r.rate<g.low) verdict=g.txtLow;
+  else if(r.rate>g.high) verdict=g.txtHigh;
+  return `7-dňový priemer: <b>${r.now.toFixed(1)} kg</b> (${r.rate>=0?"+":""}${r.rate.toFixed(2)} kg/týž.)<br>${verdict}`;
 }
 
 /* --- deload --- */
 function deloadBanner(){
   if(S.deload.active)
     return `<div class="banner deload"><b>DELOAD týždeň</b> — 1 set na cvik, váhy −10 %, nie do zlyhania.
-      Ideálny čas na fyzio strečinky a regeneráciu.
       <div style="margin-top:8px"><button class="small" onclick="endDeload()">Ukončiť deload</button></div></div>`;
   const weeks=Math.floor(daysBetween(S.deload.start,todayISO())/7);
   if(weeks>=S.profile.deloadWeeks)
@@ -605,7 +694,7 @@ function resetDeloadCounter(){
   renderSettings(); toast("Deload počítadlo vynulované");
 }
 
-/* --- adaptívna korekcia --- */
+/* --- adaptívna korekcia podľa cieľa --- */
 function runAdapt(){
   const a=S.adapt;
   const sorted=[...S.meas].filter(m=>m.w!=null).sort((x,y)=>x.d<y.d?-1:1);
@@ -614,17 +703,12 @@ function runAdapt(){
   if(daysBetween(sorted[0].d,last)<13) return;
   if(a.pending) return;
   if(a.lastCheck && daysBetween(a.lastCheck,todayISO())<7) return;
-  const avgEnd=(endD)=>{
-    const win=sorted.filter(m=>daysBetween(m.d,endD)>=0 && daysBetween(m.d,endD)<7);
-    return win.length? win.reduce((s,m)=>s+m.w,0)/win.length : null;
-  };
-  const now=avgEnd(last);
-  const pD=new Date(last); pD.setDate(pD.getDate()-7);
-  const prev=avgEnd(pD.toISOString().slice(0,10));
-  if(now==null||prev==null) return;
-  const rate=now-prev;
+  const r=weekRate();
+  if(!r || r.rate==null) return;
+  const g=GOALS[S.profile.goal]||GOALS.recomp;
   let dir="ok";
-  if(rate<0.02) dir="low"; else if(rate>0.30) dir="high";
+  if(r.rate<g.low) dir="low";        // treba viac kcal
+  else if(r.rate>g.high) dir="high"; // treba menej kcal
   if(dir==="ok") a.streak={dir:null,n:0};
   else if(a.streak.dir===dir) a.streak.n++;
   else a.streak={dir,n:1};
@@ -639,17 +723,17 @@ function adaptBanner(){
   const a=S.adapt;
   if(!a.pending) return "";
   if(a.pending.cap)
-    return `<div class="banner adapt"><b>Korekcie dosiahli ±300 kcal</b> od východiska —
-      ďalšiu zmenu prekonzultuj.
+    return `<div class="banner adapt"><b>Korekcie dosiahli ±300 kcal</b> od východiska — prekonzultuj ďalší postup.
       <div style="margin-top:8px"><button class="small ghost" onclick="dismissAdapt()">Beriem na vedomie</button></div></div>`;
   const p=a.pending;
+  const g=GOALS[S.profile.goal]||GOALS.recomp;
   const nk=S.profile.kcal+p.delta;
   const tip = p.delta>0
-    ? "Prakticky: väčšia kaša (90–100 g vločiek) alebo druhý banán do shaku."
-    : "Prakticky: menšia porcia prílohy na večeru.";
-  const why = p.dir==="low" ? "Váha rastie pomalšie než cieľ 2 týždne po sebe." : "Váha rastie rýchlejšie než cieľ 2 týždne po sebe.";
-  return `<div class="banner adapt"><b>${why}</b><br>
-    Návrh: <b>${p.delta>0?"+":""}${p.delta} kcal</b> → nový cieľ ${nk} kcal.<br><span class="mut">${tip}</span>
+    ? "Prakticky: pridaj jeden proteínový blok (shake/skyr) alebo väčšiu prílohu."
+    : "Prakticky: menšia porcia prílohy na večeru — proteín NEUBERAJ.";
+  const why = p.dir==="low" ? g.txtLow : g.txtHigh;
+  return `<div class="banner adapt"><b>${why}</b> (2 týždne po sebe)<br>
+    Návrh: <b>${p.delta>0?"+":""}${p.delta} kcal</b> → referencia ${nk} kcal.<br><span class="mut">${tip}</span>
     <div style="margin-top:8px">
       <button class="small primary" onclick="applyAdapt()">Aplikovať</button>
       <button class="small ghost" onclick="dismissAdapt()">Teraz nie</button>
@@ -661,7 +745,7 @@ function applyAdapt(){
   S.profile.c=Math.round(S.profile.c+p.delta/4);
   S.adapt.applied+=p.delta;
   S.adapt.pending=null; S.adapt.streak={dir:null,n:0};
-  save(); renderToday(); toast(`Cieľ upravený: ${S.profile.kcal} kcal`);
+  save(); renderToday(); toast(`Referencia upravená: ${S.profile.kcal} kcal`);
 }
 function dismissAdapt(){
   S.adapt.pending=null; S.adapt.streak={dir:null,n:0};
@@ -671,17 +755,20 @@ function dismissAdapt(){
 /* --- merania a tenis --- */
 function saveMeasure(){
   const w=parseFloat(document.getElementById("wIn").value);
-  const bf=parseFloat(document.getElementById("bfIn").value);
+  const wa=parseFloat(document.getElementById("waIn").value);
   const sl=parseFloat(document.getElementById("slIn").value);
-  const hasW=w&&w>=40&&w<=200, hasBF=bf&&bf>3&&bf<50, hasSL=sl&&sl>0&&sl<=14;
-  if(!hasW&&!hasBF&&!hasSL){ toast("Zadaj aspoň jednu hodnotu"); return; }
+  const bf=parseFloat(document.getElementById("bfIn").value);
+  const hasW=w&&w>=40&&w<=200, hasWA=wa&&wa>=50&&wa<=160,
+        hasSL=sl&&sl>0&&sl<=14, hasBF=bf&&bf>3&&bf<50;
+  if(!hasW&&!hasWA&&!hasSL&&!hasBF){ toast("Zadaj aspoň jednu hodnotu"); return; }
   const d=todayISO();
   const old=S.meas.find(m=>m.d===d)||{d};
   if(hasW) old.w=+w.toFixed(1);
-  if(hasBF) old.bf=+bf.toFixed(1);
+  if(hasWA) old.wa=+wa.toFixed(1);
   if(hasSL) old.sl=+sl.toFixed(1);
+  if(hasBF) old.bf=+bf.toFixed(1);
   S.meas=S.meas.filter(m=>m.d!==d); S.meas.push(old); save();
-  ["wIn","bfIn","slIn"].forEach(i=>document.getElementById(i).value="");
+  ["wIn","waIn","slIn","bfIn"].forEach(i=>document.getElementById(i).value="");
   renderToday(); toast("Uložené ✓");
 }
 function logTennis(){
@@ -693,7 +780,7 @@ function logTennis(){
 function startWorkout(idx){
   const di = idx!=null? idx : S.dayIdx;
   if(!S.draft || S.draft.dayIdx!==di){
-    S.draft={dayIdx:di,vals:{},note:""};
+    S.draft={dayIdx:di,gym:S.gym,vals:{},note:""};
     save();
   }
   go("workout");
@@ -718,30 +805,46 @@ function stagnant(exName){
   return a<=b && b<=c && a<=c;
 }
 
-function altOptions(orig){
-  const cur=S.swaps[orig]||orig;
+function altOptions(orig,g){
+  const cur=resolveEx(orig,g);
   const set=new Set(ALTS[cur]||ALTS[orig]||[]);
   if(cur!==orig) set.add(orig);
   set.delete(cur);
   return [...set];
 }
 
-function altBox(orig){
-  const cur=S.swaps[orig]||orig;
-  const opts=altOptions(orig);
-  if(!opts.length) return "";
+function freePickHTML(orig,g){
+  const cur=resolveEx(orig,g);
+  const muscle=EXDB[cur]?.m || EXDB[orig]?.m;
+  const same=[], rest=[];
+  Object.keys(EXDB).forEach(n=>{
+    if(n===cur) return;
+    (EXDB[n].m===muscle? same:rest).push(n);
+  });
+  const opt=n=>`<option value="${esc(n)}">${esc(n)}${n===orig?" ↩":""}</option>`;
+  return `<select style="margin-top:6px" onchange="if(this.value){swapTo('${esc(orig)}',this.value)}">
+    <option value="">iný cvik…</option>
+    <optgroup label="Rovnaká partia (${muscle})">${same.map(opt).join("")}</optgroup>
+    <optgroup label="Ostatné">${rest.map(opt).join("")}</optgroup>
+  </select>`;
+}
+
+function altBox(orig,g){
+  const cur=resolveEx(orig,g);
+  const opts=altOptions(orig,g);
   const btns=opts.map(o=>{
     const isBack=(o===orig);
     return `<button class="small ghost" style="margin:2px"
       onclick="swapTo('${esc(orig)}','${esc(o)}')">${isBack?"↩ ":""}${esc(o)}</button>`;
   }).join("");
-  return `<details class="altbox"><summary>⇄ Alternatívy${cur!==orig?` <span class="tag">vymenené — pôvodne ${esc(orig)}</span>`:""}</summary>
-    <div style="margin-top:6px">${btns}</div></details>`;
+  return `<details class="altbox"><summary>⇄ Alternatívy (${esc(S.gyms[g].name)})${cur!==orig?` <span class="tag">vymenené — pôvodne ${esc(orig)}</span>`:""}</summary>
+    <div style="margin-top:6px">${btns}${freePickHTML(orig,g)}</div></details>`;
 }
 
 function swapTo(orig,target){
-  if(target===orig) delete S.swaps[orig];
-  else S.swaps[orig]=target;
+  const g = S.draft? S.draft.gym : S.gym;
+  if(target===orig) delete S.gyms[g].swaps[orig];
+  else S.gyms[g].swaps[orig]=target;
   save(); renderWorkout();
   toast(target===orig? `↩ ${orig}` : `→ ${target}`);
 }
@@ -751,13 +854,14 @@ function renderWorkout(){
   if(!S.draft){ box.innerHTML=planBrowser(); return; }
 
   const day=PLAN[S.draft.dayIdx];
-  let h=`<div class="card"><h2>${day.name} <span class="mut" style="font-weight:400">· ${day.sub}</span></h2>
+  const g=S.draft.gym||S.gym;
+  let h=`<div class="card"><h2>${day.name} <span class="mut" style="font-weight:400">· ${day.sub} · ${esc(S.gyms[g].name)}</span></h2>
     <div class="mut">Rozcvička: ${day.warm.map(w=>esc(w)+yt(w)).join(" · ")}</div>
     ${S.deload.active?'<div class="hint warn" style="margin-top:8px">DELOAD: 1 set, −10 % váhy, nie do zlyhania</div>':''}
     </div>`;
 
   day.ex.forEach((orig,ei)=>{
-    const exName=S.swaps[orig]||orig;
+    const exName=resolveEx(orig,g);
     const db=EXDB[exName];
     const last=lastPerf(exName);
     const hint=S.hints[exName];
@@ -802,12 +906,12 @@ function renderWorkout(){
       </div>`;
     }
     h+=`<div class="mut" id="bo_${ei}">Back-off návrh: ${boSugg?boSugg+" kg":"—"} (−12,5 %)${boWarn}</div>`;
-    h+=altBox(orig);
+    h+=altBox(orig,g);
     h+=`</div>`;
   });
 
   h+=`<div class="card">
-    <label>Poznámka k tréningu (voliteľné — napr. „formový reset", „bok sa ozval", „skrátené")</label>
+    <label>Poznámka k tréningu (voliteľné — „formový reset", „bok sa ozval", „skrátené")</label>
     <input id="woNote" value="${esc(S.draft.note||"")}" onchange="S.draft.note=this.value;save()">
   </div>
   <div class="card row">
@@ -821,7 +925,7 @@ function planBrowser(){
   let h=`<div class="card">
     <h3>Ďalší na rade</h3>
     <div class="row" style="margin-top:6px">
-      <div class="grow"><b>${PLAN[S.dayIdx].name}</b> <span class="mut">· ${PLAN[S.dayIdx].sub}</span></div>
+      <div class="grow"><b>${PLAN[S.dayIdx].name}</b> <span class="mut">· ${PLAN[S.dayIdx].sub} · ${esc(S.gyms[S.gym].name)}</span></div>
       <button class="primary" onclick="startWorkout()">Začať</button>
     </div></div>`;
   PLAN.forEach((day,di)=>{
@@ -830,7 +934,7 @@ function planBrowser(){
       <div class="body">
       <div class="mut" style="margin-bottom:6px">Rozcvička: ${day.warm.map(w=>esc(w)+yt(w)).join(" · ")}</div>`;
     day.ex.forEach(orig=>{
-      const exName=S.swaps[orig]||orig;
+      const exName=resolveEx(orig,S.gym);
       const db=EXDB[exName];
       const last=lastPerf(exName);
       const hint=S.hints[exName];
@@ -853,8 +957,7 @@ function setVal(k,f,v){
   if(f==="kg"){
     const ei=+k.split("_")[0];
     const day=PLAN[S.draft.dayIdx];
-    const orig=day.ex[ei];
-    const exName=S.swaps[orig]||orig;
+    const exName=resolveEx(day.ex[ei], S.draft.gym||S.gym);
     const db=EXDB[exName];
     const v0=S.draft.vals[`${ei}_0`]||{};
     const v1=S.draft.vals[`${ei}_1`]||{};
@@ -871,9 +974,10 @@ function cancelWorkout(){
 
 function finishWorkout(){
   const day=PLAN[S.draft.dayIdx];
+  const g=S.draft.gym||S.gym;
   const exs=[];
   day.ex.forEach((orig,ei)=>{
-    const exName=S.swaps[orig]||orig;
+    const exName=resolveEx(orig,g);
     const sets=[];
     for(let si=0;si<SETS;si++){
       const v=S.draft.vals[`${ei}_${si}`];
@@ -883,7 +987,7 @@ function finishWorkout(){
   });
   if(!exs.length){ toast("Nezapísal si žiadny set"); return; }
 
-  const wo={d:todayISO(),dayId:day.id,ex:exs};
+  const wo={d:todayISO(),dayId:day.id,gym:g,ex:exs};
   const note=(S.draft.note||"").trim();
   if(note) wo.note=note;
   S.workouts.push(wo);
@@ -916,58 +1020,48 @@ function finishWorkout(){
   toast("Tréning uložený ✓");
 }
 
-/* ==================== JEDLO ==================== */
-function foodDay(d){
-  if(!S.food[d]) S.food[d]={b:{}};
-  if(!S.food[d].b) S.food[d].b={};
-  return S.food[d];
+/* ==================== JEDLO — proteínový počítač ==================== */
+function protDay(d){
+  if(!S.prot[d]) S.prot[d]={log:[]};
+  if(!S.prot[d].log) S.prot[d].log=[];
+  return S.prot[d];
 }
-function foodSum(d){
-  const f=S.food[d]; if(!f||!f.b) return {kcal:0,p:0};
-  let kcal=0,p=0;
-  FOOD_BLOCKS.forEach(b=>{
-    const st=f.b[b.id];
-    if(st&&st.on){ kcal+=b.kcal*(st.s||1); p+=b.p*(st.s||1); }
-  });
-  return {kcal:Math.round(kcal),p:Math.round(p)};
+function protSum(d){
+  const f=S.prot[d]; if(!f||!f.log) return 0;
+  return Math.round(f.log.reduce((s,e)=>s+(+e.p||0),0));
+}
+function addProt(t,p){
+  protDay(todayISO()).log.push({t,p:+p});
+  save();
+  if(document.getElementById("scr-food").classList.contains("on")) renderFood();
+  toast(`+${p} g · spolu ${protSum(todayISO())} g`);
+}
+function addProtCustom(){
+  const el=document.getElementById("protCustom");
+  const p=parseFloat(el.value);
+  if(!p||p<=0||p>150){ toast("Zadaj gramy proteínu"); return; }
+  el.value="";
+  addProt("Iné",Math.round(p));
+}
+function undoProt(i){
+  const f=protDay(todayISO());
+  f.log.splice(i,1); save(); renderFood();
 }
 function renderFood(){
   const d=todayISO();
-  const f=foodDay(d);
-  const sum=foodSum(d);
-  const P=S.profile;
-
-  document.getElementById("foodBars").innerHTML=`
-    <div class="row" style="justify-content:space-between"><span>Kalórie</span>
-      <b>${sum.kcal} / ${P.kcal}</b></div>
-    <div class="bar"><i style="width:${Math.min(100,sum.kcal/P.kcal*100)}%"></i></div>
-    <div class="row" style="justify-content:space-between"><span>Proteín</span>
-      <b>${sum.p} g / ${P.p} g</b></div>
-    <div class="bar p"><i style="width:${Math.min(100,sum.p/P.p*100)}%"></i></div>`;
-
-  document.getElementById("foodBlocks").innerHTML = FOOD_BLOCKS.map(b=>{
-    const st=f.b[b.id]||{on:0,s:1};
-    return `<div class="foodblk ${st.on?"on":""}" onclick="toggleBlock('${b.id}')">
-      <div class="fcheck">${st.on?"✓":""}</div>
-      <div class="grow"><b>${b.name}</b>
-        <div class="mut">${Math.round(b.kcal*(st.s||1))} kcal · ${Math.round(b.p*(st.s||1))} g P</div></div>
-      <div class="sizechips" onclick="event.stopPropagation()">
-        ${SIZES.map(sz=>`<span class="${(st.s||1)===sz.v?"on":""}"
-          onclick="sizeBlock('${b.id}',${sz.v})">${sz.l}</span>`).join("")}
-      </div></div>`;
-  }).join("");
-}
-function toggleBlock(id){
-  const f=foodDay(todayISO());
-  const st=f.b[id]||{on:0,s:1};
-  st.on = st.on?0:1; f.b[id]=st;
-  save(); renderFood();
-}
-function sizeBlock(id,s){
-  const f=foodDay(todayISO());
-  const st=f.b[id]||{on:0,s:1};
-  st.s=s; if(!st.on) st.on=1;
-  f.b[id]=st; save(); renderFood();
+  const sum=protSum(d);
+  const target=S.profile.p;
+  document.getElementById("protBar").innerHTML=`
+    <div class="row" style="justify-content:space-between"><span class="big" style="font-size:22px">${sum} g</span>
+      <span class="mut">cieľ ${target} g</span></div>
+    <div class="bar"><i style="width:${Math.min(100,sum/target*100)}%"></i></div>`;
+  document.getElementById("protBtns").innerHTML = PROT_BTNS.map(b=>
+    `<div class="pbtn" onclick="addProt('${esc(b.t)}',${b.p})"><b>${b.t}</b><span>+${b.p} g</span></div>`).join("");
+  const log=protDay(d).log;
+  document.getElementById("protLog").innerHTML = log.length
+    ? log.map((e,i)=>`<div class="plog"><span>${esc(e.t)} · <b>${e.p} g</b></span>
+        <span style="cursor:pointer" onclick="undoProt(${i})">✕</span></div>`).join("")
+    : `<p class="mut">Zatiaľ nič — ťukaj počas dňa, nie večer spätne.</p>`;
 }
 
 /* ==================== PROGRES ==================== */
@@ -976,7 +1070,7 @@ let progMode="ton";
 let bestEx=null;
 
 function renderProgress(){
-  renderWeightChart(); renderBFChart(); renderSleepChart();
+  renderWeightChart(); renderWaistChart(); renderBFChart(); renderSleepChart();
   renderTonnage(); renderHistory();
 }
 
@@ -1037,6 +1131,13 @@ function renderWeightChart(){
   document.getElementById("chartW").innerHTML = pts.length<2
     ? `<p class="mut">Zapíš aspoň 2 merania.</p>`
     : svgChart([{pts,type:"dots",color:"#8b98a5"},{pts:avg,type:"line",color:"#ffb03a"}],
+        {dec:1,xlabels:xlabelsFor(sorted,d0)});
+}
+function renderWaistChart(){
+  const {sorted,pts,d0}=measSeries("wa");
+  document.getElementById("chartWA").innerHTML = pts.length<2
+    ? `<p class="mut">Meraj pás 1× týždenne — ráno, cez pupok, bez zaťahovania.</p>`
+    : svgChart([{pts,type:"dots",color:"#8b98a5"},{pts,type:"line",color:"#4ade80"}],
         {dec:1,xlabels:xlabelsFor(sorted,d0)});
 }
 function renderBFChart(){
@@ -1121,10 +1222,11 @@ function renderHistory(){
     const w=it.w;
     const day=PLAN.find(p=>p.id===w.dayId);
     const ton=Math.round(w.ex.reduce((s,e)=>s+e.sets.reduce((a,x)=>a+x.kg*x.reps,0),0));
+    const gymTag=w.gym&&S.gyms[w.gym]? ` <span class="tag">${S.gyms[w.gym].name}</span>`:"";
     const det=w.ex.map(e=>`<b>${esc(e.n)}</b>: ${e.sets.map(s=>`${s.kg}×${s.reps}`).join(", ")}`).join("<br>")
       +(w.note?`<br><i>📝 ${esc(w.note)}</i>`:"");
     return `<div class="hist" onclick="this.classList.toggle('open')">
-      <div class="top"><span>${fmtDY(w.d)} · <b>${day?day.name:w.dayId}</b>${w.note?" 📝":""}</span>
+      <div class="top"><span>${fmtDY(w.d)} · <b>${day?day.name:w.dayId}</b>${gymTag}${w.note?" 📝":""}</span>
       <span class="mut">${ton.toLocaleString("sk")} kg</span></div>
       <div class="det">${det}</div></div>`;
   }).join("");
@@ -1133,6 +1235,7 @@ function renderHistory(){
 /* ==================== NASTAVENIA ==================== */
 function renderSettings(){
   const p=S.profile;
+  sGoal.value=p.goal||"recomp";
   sKcal.value=p.kcal; sP.value=p.p; sF.value=p.f; sC.value=p.c;
   sMode.value=p.mode; sDeload.value=p.deloadWeeks;
   const a=S.adapt;
@@ -1144,8 +1247,8 @@ function renderSettings(){
 }
 function saveSettings(){
   S.profile={kcal:+sKcal.value||2850,p:+sP.value||160,f:+sF.value||75,c:+sC.value||385,
-    mode:sMode.value,deloadWeeks:+sDeload.value||7};
-  save(); toast("Nastavenia uložené ✓");
+    mode:sMode.value,deloadWeeks:+sDeload.value||7,goal:sGoal.value||"recomp"};
+  save(); renderSettings(); toast("Nastavenia uložené ✓");
 }
 function exportJSON(){
   const blob=new Blob([JSON.stringify(S,null,1)],{type:"application/json"});
